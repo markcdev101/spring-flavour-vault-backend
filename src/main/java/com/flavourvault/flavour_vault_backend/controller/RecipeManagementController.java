@@ -17,7 +17,7 @@ import com.flavourvault.flavour_vault_backend.model.Recipe;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
 @RestController
-@RequestMapping("/flavourvault/api/recipes")
+@RequestMapping("/flavourvault/api")
 public class RecipeManagementController {
 
 	/**
@@ -27,13 +27,25 @@ public class RecipeManagementController {
 	private RecipeManagementService recipeManagementService;
 
 	/**
+	 * Gets all the recipe
+	 * @GetMapping to indicate it is a GET method
+	 * @return
+	 */
+	@GetMapping("/recipes")
+	public ResponseEntity<List<Recipe>> getAllRecipes() {
+		List<Recipe> recipes = recipeManagementService.getAllRecipes();
+		return ResponseEntity.ok(recipes);
+	}
+	
+	
+	/**
 	 * Creates a recipe
 	 * @PostMapping annotation to indicate this is a POST method
 	 * ResponseEntity adds HTTP Status Code
 	 * @param recipe
 	 * @return
 	 */
-	@PostMapping
+	@PostMapping("/recipes")
 	public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) {
 		Recipe createdRecipe = recipeManagementService.createRecipe(recipe);
 		return ResponseEntity.ok(createdRecipe);
@@ -45,7 +57,7 @@ public class RecipeManagementController {
 	 * @param id
 	 * @return
 	 */
-	@GetMapping("/{id}")
+	@GetMapping("/recipes/{id}")
 	public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
 		Recipe recipe = recipeManagementService.getRecipe(id);
 		if (recipe != null) {
@@ -55,30 +67,6 @@ public class RecipeManagementController {
 		}
 	}
 
-	/**
-	 * Gets all the recipe
-	 * @GetMapping to indicate it is a GET method
-	 * @return
-	 */
-	@GetMapping
-	public ResponseEntity<List<Recipe>> getAllRecipes() {
-		List<Recipe> recipes = recipeManagementService.getAllRecipes();
-		return ResponseEntity.ok(recipes);
-	}
-
-	
-	/**
-	 * Delete the recipe by id
-	 * @DeleteMapping to indicate it is a DELETE method.
-	 * @param id
-	 * @return
-	 */
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteRecipe(@PathVariable Long id) {
-		recipeManagementService.deleteRecipe(id);
-		return ResponseEntity.noContent().build();
-	}
-	
 	
 	/**
      * Update a recipe by ID
@@ -87,7 +75,7 @@ public class RecipeManagementController {
      * @param recipe
      * @return ResponseEntity with the updated recipe
      */
-    @PutMapping("/{id}")
+    @PutMapping("/recipes/{id}")
     public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @RequestBody Recipe recipe) {
         Recipe updatedRecipe = recipeManagementService.updateRecipe(id, recipe);
         if (updatedRecipe != null) {
@@ -96,6 +84,19 @@ public class RecipeManagementController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    
+	/**
+	 * Delete the recipe by id
+	 * @DeleteMapping to indicate it is a DELETE method.
+	 * @param id
+	 * @return
+	 */
+	@DeleteMapping("/recipes/{id}")
+	public ResponseEntity<Void> deleteRecipe(@PathVariable Long id) {
+		recipeManagementService.deleteRecipe(id);
+		return ResponseEntity.noContent().build();
+	}
 
 
 }
