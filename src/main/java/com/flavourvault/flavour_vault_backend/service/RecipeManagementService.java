@@ -37,4 +37,24 @@ public class RecipeManagementService {
 	}
 	
 	
+	/**
+     * Update an existing recipe
+     * @param id
+     * @param updatedRecipe
+     * @return the updated recipe or null if recipe doesn't exist
+     */
+    public Recipe updateRecipe(Long id, Recipe updatedRecipe) {
+        return recipeRepository.findById(id).map(recipe -> {
+            // Update the fields that can be changed
+            recipe.setName(updatedRecipe.getName());
+            recipe.setIngredients(updatedRecipe.getIngredients());
+            recipe.setInstructions(updatedRecipe.getInstructions());
+            // Add more fields as needed
+
+            return recipeRepository.save(recipe);
+        }).orElse(null);  // Return null if the recipe doesn't exist
+    }
+	
+	
+	
 }

@@ -26,7 +26,7 @@ public class Recipe {
 	private Long id;
 	private String name;
 	private String description;
-	private String ingridients;
+	private String ingredients;
 	private String instructions;
 	
 

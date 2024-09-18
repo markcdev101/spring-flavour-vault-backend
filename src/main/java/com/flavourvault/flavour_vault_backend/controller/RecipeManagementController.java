@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,6 +78,24 @@ public class RecipeManagementController {
 		recipeManagementService.deleteRecipe(id);
 		return ResponseEntity.noContent().build();
 	}
+	
+	
+	/**
+     * Update a recipe by ID
+     * @PutMapping to indicate it's a PUT method for updating
+     * @param id
+     * @param recipe
+     * @return ResponseEntity with the updated recipe
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @RequestBody Recipe recipe) {
+        Recipe updatedRecipe = recipeManagementService.updateRecipe(id, recipe);
+        if (updatedRecipe != null) {
+            return ResponseEntity.ok(updatedRecipe);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 
 }
