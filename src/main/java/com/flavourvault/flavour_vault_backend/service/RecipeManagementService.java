@@ -1,5 +1,7 @@
 package com.flavourvault.flavour_vault_backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,13 @@ public class RecipeManagementService {
 		return recipeRepository.findById(id).orElse(null);
 	}
 	
+	public List<Recipe> getAllRecipes() {
+		return recipeRepository.findAll();
+	}
+	
+	public void deleteRecipe(Long id) {
+		
+	}
 	
 	
 }
