@@ -1,9 +1,13 @@
 package com.flavourvault.flavour_vault_backend.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,8 +31,16 @@ public class Recipe {
 	private Long id;
 	private String name;
 	private String description;
-	private String ingredients;
-	private String instructions;
+
+	private int preparationTime; 
+    private int cookingTime; 
+    
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IngredientDetail> ingredientDetails;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Instruction> instructions;
 	
+    
 
 }
