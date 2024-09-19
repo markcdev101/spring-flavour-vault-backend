@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.flavourvault.flavour_vault_backend.model.Ingredient;
 import com.flavourvault.flavour_vault_backend.model.IngredientDetail;
 import com.flavourvault.flavour_vault_backend.model.Recipe;
+import com.flavourvault.flavour_vault_backend.repository.IngredientRepository;
 import com.flavourvault.flavour_vault_backend.repository.RecipeRepository;
 
 @Service
@@ -18,22 +20,33 @@ public class RecipeManagementService {
 	@Autowired
 	private RecipeRepository recipeRepository;
 	
+	@Autowired
+    private IngredientRepository ingredientRepository;
+	
 	
 	//Business Logic
 	
-	/**
+	 /**
      * Create a new recipe with its ingredients and details.
      * 
      * @param recipe The recipe to create.
      * @return The created recipe.
      */
-	public Recipe createRecipe(Recipe recipe) {
-	    // Ensure IngredientDetail relationship is maintained
-	    for (IngredientDetail detail : recipe.getIngredientDetails()) {
-	        detail.setRecipe(recipe);  // Set the recipe reference in IngredientDetail
-	    }
-	    return recipeRepository.save(recipe);
-	}
+    public Recipe createRecipe(Recipe recipe) {
+        // Save Ingredients if they don't already exist
+        for (IngredientDetail detail : recipe.getIngredientDetails()) {
+            Ingredient ingredient = detail.getIngredient();
+            if (ingredient.getId() == null || !ingredientRepository.existsById(ingredient.getId())) {
+                // Save the ingredient first if it doesn't exist
+                Ingredient savedIngredient = ingredientRepository.save(ingredient);
+                detail.setIngredient(savedIngredient);
+            }
+            detail.setRecipe(recipe);  // Set the recipe reference in IngredientDetail
+        }
+        
+        // Save the recipe and associated IngredientDetails
+        return recipeRepository.save(recipe);
+    }
 	
 	/**
      * Retrieve a recipe by its ID.
