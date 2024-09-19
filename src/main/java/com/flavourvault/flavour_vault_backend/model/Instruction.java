@@ -17,6 +17,12 @@ public class Instruction {
 
     private String step;
 
+    /**
+     * @ManyToOne to indicate that you can have many instructions per 
+     * recipe
+     * 
+     * i.e. In one recipe you can have 10 steps/instructions on how to cooked a cheesecake.
+     */
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;

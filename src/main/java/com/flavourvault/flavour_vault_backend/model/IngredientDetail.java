@@ -24,10 +24,25 @@ public class IngredientDetail {
     private String unit;      // e.g., "cups", "tablespoons"
     private String preparation;  // e.g., "minced", "chopped", "diced"
 
+    /**
+     * @ManyToOne to indicate that you can have many ingredient_detail per 
+     * recipe
+     * 
+     * i.e. You have 1g chopped onion and also 2g minced onion in one recipe.
+     * i.e. You have 20g chopped oreos and also 5 whole oreos in one recipe.
+     */
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
+    
+    /**
+     * @ManyToOne to indicate that you can have many ingredient_detail per 
+     * ingredient
+     * 
+     * i.e. You can have an Onion as an ingredient
+     * and have ingredient_detail as - 1g chopped, 2g minced
+     */
     @ManyToOne
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;

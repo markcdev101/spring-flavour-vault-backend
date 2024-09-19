@@ -19,6 +19,13 @@ public class Ingredient {
 
     private String name;
 
+    /**
+     * @OneToMany to indicate that you can have one type of ingredient
+     * with many ingredient_detail
+     * 
+     * i.e. You can have an Onion as an ingredient
+     * and have ingredient_detail as - 1g chopped, 2g minced
+     */
     @OneToMany(mappedBy = "ingredient")
     private Set<IngredientDetail> ingredientDetails;
 }
