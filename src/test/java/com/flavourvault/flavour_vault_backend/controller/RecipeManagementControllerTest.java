@@ -58,13 +58,19 @@ public class RecipeManagementControllerTest {
 	private Recipe recipe1;
     private Recipe recipe2;
 	
-    
+    /**
+	 * @Autowired for dependency injection
+	 * WebApplicationContext is an Interface to provide configuration for a web application.
+	 */
     @Autowired
     private WebApplicationContext webApplicationContext;
 	
 	/**
 	 * @BeforeEach indicates to run this method before each test
 	 * MockitoAnnotations initializes fields annotated with Mockito annotations
+	 * 
+	 * Using webAppContextSetup to initialize MockMvc with full Spring context, 
+	 * ensuring that security and other global configurations are applied in tests.
 	 */
 	@BeforeEach
 	public void setup() {
