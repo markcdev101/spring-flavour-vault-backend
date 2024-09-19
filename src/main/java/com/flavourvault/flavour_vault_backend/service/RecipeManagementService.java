@@ -33,7 +33,12 @@ public class RecipeManagementService {
 	}
 	
 	public void deleteRecipe(Long id) {
-		
+		if (recipeRepository.existsById(id)) {
+	        recipeRepository.deleteById(id);
+	    } else {
+	        // Handle the case where the recipe doesn't exist, e.g., throw an exception
+	        throw new IllegalArgumentException("Recipe with id " + id + " does not exist.");
+	    }
 	}
 	
 	
