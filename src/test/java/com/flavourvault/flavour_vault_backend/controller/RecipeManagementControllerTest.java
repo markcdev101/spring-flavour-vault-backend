@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flavourvault.flavour_vault_backend.model.Ingredient;
+import com.flavourvault.flavour_vault_backend.model.IngredientDetail;
 import com.flavourvault.flavour_vault_backend.model.Recipe;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
@@ -72,38 +75,53 @@ public class RecipeManagementControllerTest {
 	 * Using webAppContextSetup to initialize MockMvc with full Spring context, 
 	 * ensuring that security and other global configurations are applied in tests.
 	 */
-	@BeforeEach
-	public void setup() {
-		recipe1 = new Recipe(1L, "Recipe 1", "Description 1", "Ingredients 1", "Instructions 1");
-        recipe2 = new Recipe(2L, "Recipe 2", "Description 2", "Ingredients 2", "Instructions 2");
+    @BeforeEach
+    public void setup() {
+        // Create Ingredient Details
+        Ingredient flour = new Ingredient(1L, "Flour", null);
+        IngredientDetail flourDetail = new IngredientDetail(1L, "2", "cups", "sifted", null, flour);
+
+        Ingredient sugar = new Ingredient(2L, "Sugar", null);
+        IngredientDetail sugarDetail = new IngredientDetail(2L, "1", "cup", "granulated", null, sugar);
+
+        List<IngredientDetail> ingredientDetails = Arrays.asList(flourDetail, sugarDetail);
+
+        // Create Recipe 1
+        recipe1 = new Recipe(1L, "Chocolate Cake", "Delicious chocolate cake", 15, 60, ingredientDetails, null);
+
+        // Create Recipe 2
+        recipe2 = new Recipe(2L, "Vanilla Cake", "Delicious vanilla cake", 20, 50, ingredientDetails, null);
         
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
+    }
 	
 	
-	@Test
-	@WithMockUser(roles = "USER")
+    @Test
+    @WithMockUser(roles = "USER")
     public void testGetAllRecipes() throws Exception {
         when(recipeManagementService.getAllRecipes()).thenReturn(Arrays.asList(recipe1, recipe2));
 
         mockMvc.perform(get("/flavourvault/api/recipes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].name").value("Recipe 1"))
-                .andExpect(jsonPath("$[0].description").value("Description 1"))
-                .andExpect(jsonPath("$[0].ingredients").value("Ingredients 1"))
-                .andExpect(jsonPath("$[0].instructions").value("Instructions 1"))
+                .andExpect(jsonPath("$[0].name").value("Chocolate Cake"))
+                .andExpect(jsonPath("$[0].description").value("Delicious chocolate cake"))
+                .andExpect(jsonPath("$[0].preparationTime").value(15))
+                .andExpect(jsonPath("$[0].cookingTime").value(60))
+                .andExpect(jsonPath("$[0].ingredientDetails[0].quantity").value("2"))
+                .andExpect(jsonPath("$[0].ingredientDetails[0].unit").value("cups"))
+                .andExpect(jsonPath("$[0].ingredientDetails[0].preparation").value("sifted"))
                 .andExpect(jsonPath("$[1].id").value(2L))
-                .andExpect(jsonPath("$[1].name").value("Recipe 2"))
-                .andExpect(jsonPath("$[1].description").value("Description 2"))
-                .andExpect(jsonPath("$[1].ingredients").value("Ingredients 2"))
-                .andExpect(jsonPath("$[1].instructions").value("Instructions 2"));
+                .andExpect(jsonPath("$[1].name").value("Vanilla Cake"))
+                .andExpect(jsonPath("$[1].description").value("Delicious vanilla cake"))
+                .andExpect(jsonPath("$[1].preparationTime").value(20))
+                .andExpect(jsonPath("$[1].cookingTime").value(50));
     }
 
     @Test
     @WithMockUser(roles = "USER")
     public void testCreateRecipe() throws Exception {
-        Recipe newRecipe = new Recipe(null, "Recipe 3", "Description 3", "Ingredients 3", "Instructions 3");
+        Recipe newRecipe = new Recipe(null, "Strawberry Cake", "Delicious strawberry cake", 10, 40, recipe1.getIngredientDetails(), null);
 
         when(recipeManagementService.createRecipe(any(Recipe.class))).thenReturn(recipe1);
 
@@ -112,10 +130,10 @@ public class RecipeManagementControllerTest {
                 .content(objectMapper.writeValueAsString(newRecipe)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Recipe 1"))
-                .andExpect(jsonPath("$.description").value("Description 1"))
-                .andExpect(jsonPath("$.ingredients").value("Ingredients 1"))
-                .andExpect(jsonPath("$.instructions").value("Instructions 1"));
+                .andExpect(jsonPath("$.name").value("Chocolate Cake"))
+                .andExpect(jsonPath("$.description").value("Delicious chocolate cake"))
+                .andExpect(jsonPath("$.preparationTime").value(15))
+                .andExpect(jsonPath("$.cookingTime").value(60));
     }
 
     @Test
@@ -126,10 +144,10 @@ public class RecipeManagementControllerTest {
         mockMvc.perform(get("/flavourvault/api/recipes/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Recipe 1"))
-                .andExpect(jsonPath("$.description").value("Description 1"))
-                .andExpect(jsonPath("$.ingredients").value("Ingredients 1"))
-                .andExpect(jsonPath("$.instructions").value("Instructions 1"));
+                .andExpect(jsonPath("$.name").value("Chocolate Cake"))
+                .andExpect(jsonPath("$.description").value("Delicious chocolate cake"))
+                .andExpect(jsonPath("$.preparationTime").value(15))
+                .andExpect(jsonPath("$.cookingTime").value(60));
     }
 
     @Test
@@ -144,7 +162,7 @@ public class RecipeManagementControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     public void testUpdateRecipe_Success() throws Exception {
-        Recipe updatedRecipe = new Recipe(1L, "Updated Recipe", "Updated Description", "Updated Ingredients", "Updated Instructions");
+        Recipe updatedRecipe = new Recipe(1L, "Updated Chocolate Cake", "Updated Description", 20, 70, recipe1.getIngredientDetails(), null);
 
         when(recipeManagementService.updateRecipe(eq(1L), any(Recipe.class))).thenReturn(updatedRecipe);
 
@@ -153,10 +171,10 @@ public class RecipeManagementControllerTest {
                 .content(objectMapper.writeValueAsString(updatedRecipe)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Updated Recipe"))
+                .andExpect(jsonPath("$.name").value("Updated Chocolate Cake"))
                 .andExpect(jsonPath("$.description").value("Updated Description"))
-                .andExpect(jsonPath("$.ingredients").value("Updated Ingredients"))
-                .andExpect(jsonPath("$.instructions").value("Updated Instructions"));
+                .andExpect(jsonPath("$.preparationTime").value(20))
+                .andExpect(jsonPath("$.cookingTime").value(70));
     }
 
     @Test
@@ -178,8 +196,4 @@ public class RecipeManagementControllerTest {
         mockMvc.perform(delete("/flavourvault/api/recipes/1"))
                 .andExpect(status().isNoContent());
     }
-	
-	
-	
-
 }
