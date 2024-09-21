@@ -11,6 +11,9 @@ import com.flavourvault.flavour_vault_backend.model.Recipe;
 import com.flavourvault.flavour_vault_backend.repository.IngredientRepository;
 import com.flavourvault.flavour_vault_backend.repository.RecipeRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RecipeManagementService {
 	
@@ -33,6 +36,7 @@ public class RecipeManagementService {
      * @return The created recipe.
      */
     public Recipe createRecipe(Recipe recipe) {
+    	log.info("Creating recipe for : {}", recipe.getName());
         // Save Ingredients if they don't already exist
         for (IngredientDetail detail : recipe.getIngredientDetails()) {
             Ingredient ingredient = detail.getIngredient();
@@ -55,6 +59,7 @@ public class RecipeManagementService {
      * @return The recipe, or null if not found.
      */
 	public Recipe getRecipe(Long id) {
+    	log.info("Fetching recipe with id : {}", id);
 		return recipeRepository.findById(id).orElse(null);
 	}
 	
@@ -64,6 +69,7 @@ public class RecipeManagementService {
      * @return A list of all recipes.
      */
 	public List<Recipe> getAllRecipes() {
+    	log.info("Fetching all recipes");
 		return recipeRepository.findAll();
 	}
 	
@@ -73,9 +79,12 @@ public class RecipeManagementService {
      * @param id The ID of the recipe to delete.
      */
 	public void deleteRecipe(Long id) {
+    	log.info("Deleting recipe with id : {}", id);
 		if (recipeRepository.existsById(id)) {
 			recipeRepository.deleteById(id);
+			log.info("Deleted recipe with id : {}", id);
 		} else {
+			log.error("Error occured deleting recipe with id : {}", id);
 			throw new IllegalArgumentException("Recipe with id " + id + " does not exist.");
 		}
 	}
@@ -88,6 +97,9 @@ public class RecipeManagementService {
      * @return The updated recipe, or null if the recipe doesn't exist.
      */
     public Recipe updateRecipe(Long id, Recipe updatedRecipe) {
+    	log.info("Updating recipe with id : {} with a new recipe: {}", id, updatedRecipe.getName());
+    	
+    	
         return recipeRepository.findById(id).map(existingRecipe -> {
             // Update basic recipe details
             existingRecipe.setName(updatedRecipe.getName());
@@ -104,7 +116,7 @@ public class RecipeManagementService {
                 detail.setRecipe(existingRecipe);  // Set the correct reference
                 existingRecipe.getIngredientDetails().add(detail);
             }
-
+            log.info("Updated recipe with id : {}", id);
             return recipeRepository.save(existingRecipe);
         }).orElse(null);  // Return null if the recipe doesn't exist
     }

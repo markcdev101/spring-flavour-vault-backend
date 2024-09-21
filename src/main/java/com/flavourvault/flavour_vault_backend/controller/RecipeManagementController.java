@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.flavourvault.flavour_vault_backend.model.Recipe;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/flavourvault/api")
 public class RecipeManagementController {
@@ -33,7 +36,9 @@ public class RecipeManagementController {
 	 */
 	@GetMapping("/recipes")
 	public ResponseEntity<List<Recipe>> getAllRecipes() {
+    	log.info("START GET /recipes endpoint");
 		List<Recipe> recipes = recipeManagementService.getAllRecipes();
+    	log.info("END GET /recipes endpoint");
 		return ResponseEntity.ok(recipes);
 	}
 	
@@ -47,7 +52,9 @@ public class RecipeManagementController {
 	 */
 	@PostMapping("/recipes")
 	public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) {
+    	log.info("START POST /recipes endpoint");
 		Recipe createdRecipe = recipeManagementService.createRecipe(recipe);
+    	log.info("END POST /recipes endpoint");
 		return ResponseEntity.ok(createdRecipe);
 	}
 
@@ -59,10 +66,13 @@ public class RecipeManagementController {
 	 */
 	@GetMapping("/recipes/{id}")
 	public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
+    	log.info("START GET /recipes/{id} endpoint");
 		Recipe recipe = recipeManagementService.getRecipe(id);
 		if (recipe != null) {
+	    	log.info("END GET /recipes/{id} endpoint");
 			return ResponseEntity.ok(recipe);
 		} else {
+			log.info("END GET /recipes/{id} endpoint");
 			return ResponseEntity.notFound().build();
 		}
 	}
@@ -77,10 +87,13 @@ public class RecipeManagementController {
      */
     @PutMapping("/recipes/{id}")
     public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @RequestBody Recipe recipe) {
+    	log.info("START PUT /recipes/{id} endpoint");
         Recipe updatedRecipe = recipeManagementService.updateRecipe(id, recipe);
         if (updatedRecipe != null) {
+        	log.info("END PUT /recipes/{id} endpoint");
             return ResponseEntity.ok(updatedRecipe);
         } else {
+        	log.info("END PUT /recipes/{id} endpoint");
             return ResponseEntity.notFound().build();
         }
     }
@@ -94,7 +107,9 @@ public class RecipeManagementController {
 	 */
 	@DeleteMapping("/recipes/{id}")
 	public ResponseEntity<Void> deleteRecipe(@PathVariable Long id) {
+		log.info("START DELETE /recipes/{id} endpoint");
 		recipeManagementService.deleteRecipe(id);
+		log.info("END DELETE /recipes/{id} endpoint");
 		return ResponseEntity.noContent().build();
 	}
 
