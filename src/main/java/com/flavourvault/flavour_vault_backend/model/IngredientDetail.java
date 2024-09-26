@@ -1,5 +1,7 @@
 package com.flavourvault.flavour_vault_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,12 +29,15 @@ public class IngredientDetail {
     /**
      * @ManyToOne to indicate that you can have many ingredient_detail per 
      * recipe
+     * @JsonIgnore prevents the recipe from being serialized in the IngredientDetail
      * 
      * i.e. You have 1g chopped onion and also 2g minced onion in one recipe.
      * i.e. You have 20g chopped oreos and also 5 whole oreos in one recipe.
      */
     @ManyToOne
     @JoinColumn(name = "recipe_id")
+    @JsonIgnore
+    //@JsonBackReference - This side of the relationship is ignored.
     private Recipe recipe;
 
     
