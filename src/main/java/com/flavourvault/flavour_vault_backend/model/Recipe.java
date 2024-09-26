@@ -43,6 +43,7 @@ public class Recipe {
      * i.e. You have 20g chopped oreos and also 5 whole oreos in one recipe.
      */
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JsonManagedReference - when we want to serialized this
     private List<IngredientDetail> ingredientDetails;
 
     
