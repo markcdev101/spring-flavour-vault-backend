@@ -3,6 +3,7 @@ package com.flavourvault.flavour_vault_backend.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +57,8 @@ public class RecipeManagementService {
 	/**
      * Retrieve a recipe by its ID.
      * 
+     * @Cacheable annotation to add this to Redis
+     * 
      * @param id The ID of the recipe to retrieve.
      * @return The recipe, or null if not found.
      */
@@ -82,6 +85,7 @@ public class RecipeManagementService {
      * 
      * @param id The ID of the recipe to delete.
      */
+	@CacheEvict(value = "recipes", key = "#id")
 	public void deleteRecipe(Long id) {
     	log.info("Deleting recipe with id : {}", id);
 		if (recipeRepository.existsById(id)) {
@@ -100,6 +104,7 @@ public class RecipeManagementService {
      * @param updatedRecipe The updated recipe data.
      * @return The updated recipe, or null if the recipe doesn't exist.
      */
+	@CacheEvict(value = "recipes", key = "#id")
     public Recipe updateRecipe(Long id, Recipe updatedRecipe) {
     	log.info("Updating recipe with id : {} with a new recipe: {}", id, updatedRecipe.getName());
     	
