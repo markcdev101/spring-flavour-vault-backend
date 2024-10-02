@@ -1,5 +1,8 @@
 package com.flavourvault.flavour_vault_backend.model;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -17,7 +20,14 @@ import lombok.Setter;
 @Entity
 @Table(name="ingredient_details")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class IngredientDetail {
+public class IngredientDetail implements Serializable {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8155803006869383664L;
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,8 +46,8 @@ public class IngredientDetail {
      */
     @ManyToOne
     @JoinColumn(name = "recipe_id")
-    @JsonIgnore
-    //@JsonBackReference - This side of the relationship is ignored.
+//    @JsonIgnore
+    @JsonBackReference // This side of the relationship is ignored.
     private Recipe recipe;
 
     

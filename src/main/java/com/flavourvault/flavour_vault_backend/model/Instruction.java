@@ -1,5 +1,7 @@
 package com.flavourvault.flavour_vault_backend.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +11,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "instructions")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Instruction {
+public class Instruction  implements Serializable {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3061752058900869613L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

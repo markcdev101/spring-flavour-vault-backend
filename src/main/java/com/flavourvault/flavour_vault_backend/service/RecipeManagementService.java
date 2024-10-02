@@ -62,6 +62,8 @@ public class RecipeManagementService {
     @Cacheable(value = "recipes", key = "#id")
 	public Recipe getRecipe(Long id) {
     	log.info("Fetching recipe with id : {}", id);
+    	
+    	log.info("Cache miss - retrieving from database");
 		return recipeRepository.findById(id).orElse(null);
 	}
 	
