@@ -1,9 +1,13 @@
 package com.flavourvault.flavour_vault_backend.model;
 
+import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +28,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "recipes")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Recipe {
+public class Recipe implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1704498941193875915L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +51,8 @@ public class Recipe {
      * i.e. You have 1g chopped onion and also 2g minced onion in one recipe.
      * i.e. You have 20g chopped oreos and also 5 whole oreos in one recipe.
      */
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@JsonManagedReference - when we want to serialized this
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // This side will be serialized
     private List<IngredientDetail> ingredientDetails;
 
     
@@ -52,7 +61,7 @@ public class Recipe {
      * 
      * i.e. In one recipe you can have 10 steps/instructions on how to cooked a cheesecake.
      */
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Instruction> instructions;
 	
     

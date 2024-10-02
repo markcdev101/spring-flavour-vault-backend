@@ -3,6 +3,7 @@ package com.flavourvault.flavour_vault_backend.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.flavourvault.flavour_vault_backend.model.Ingredient;
@@ -58,8 +59,11 @@ public class RecipeManagementService {
      * @param id The ID of the recipe to retrieve.
      * @return The recipe, or null if not found.
      */
+    @Cacheable(value = "recipes", key = "#id")
 	public Recipe getRecipe(Long id) {
     	log.info("Fetching recipe with id : {}", id);
+    	
+    	log.info("Cache miss - retrieving from database");
 		return recipeRepository.findById(id).orElse(null);
 	}
 	
