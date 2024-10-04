@@ -1,6 +1,7 @@
 package com.flavourvault.flavour_vault_backend.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -39,22 +40,37 @@ public class RecipeManagementService {
      * @param recipe The recipe to create.
      * @return The created recipe.
      */
-    public Recipe createRecipe(Recipe recipe) {
-    	log.info("Creating recipe for : {}", recipe.getName());
-        // Save Ingredients if they don't already exist
-        for (IngredientDetail detail : recipe.getIngredientDetails()) {
-            Ingredient ingredient = detail.getIngredient();
-            if (ingredient.getId() == null || !ingredientRepository.existsById(ingredient.getId())) {
-                // Save the ingredient first if it doesn't exist
-                Ingredient savedIngredient = ingredientRepository.save(ingredient);
-                detail.setIngredient(savedIngredient);
-            }
-            detail.setRecipe(recipe);  // Set the recipe reference in IngredientDetail
-        }
-        
-        // Save the recipe and associated IngredientDetails
-        return recipeRepository.save(recipe);
-    }
+	public Recipe createRecipe(Recipe recipe) {
+	    log.info("Creating recipe for : {}", recipe.getName());
+
+	    // Save Ingredients if they don't already exist
+	    for (IngredientDetail detail : recipe.getIngredientDetails()) {
+	        Ingredient ingredient = detail.getIngredient();
+	        
+	        if (ingredient.getName() != null) {
+	            // Try to find the ingredient by name
+	            Optional<Ingredient> existingIngredient = ingredientRepository.findByName(ingredient.getName());
+	            if (existingIngredient.isPresent()) {
+	                // If the ingredient exists, use the existing one
+	                detail.setIngredient(existingIngredient.get());
+	            } else {
+	                // If the ingredient doesn't exist, save the new ingredient
+	                Ingredient savedIngredient = ingredientRepository.save(ingredient);
+	                detail.setIngredient(savedIngredient);
+	            }
+	        } else {
+	            // Handle the case where the ingredient name is null (if needed)
+	            log.warn("Ingredient name is null for one of the details.");
+	            throw new IllegalArgumentException("Ingredient name cannot be null.");
+	        }
+
+	        // Set the recipe reference in IngredientDetail
+	        detail.setRecipe(recipe);
+	    }
+
+	    // Save the recipe and associated IngredientDetails
+	    return recipeRepository.save(recipe);
+	}
 	
 	/**
      * Retrieve a recipe by its ID.
