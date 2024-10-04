@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +49,11 @@ public class IngredientManagementService {
 	 * @param id
 	 * @return
 	 */
+	@Cacheable(value="ingredients", key="#id")
 	public Ingredient getIngredient(Long id) {
 		log.info("Fetching ingredient with id: {}", id);
+		
+		log.info("Cache miss - retrieving from the database");
 		
 		return ingredientRepository.findById(id).orElse(null);
 	}
@@ -66,6 +71,7 @@ public class IngredientManagementService {
 	 * Delete an ingredient by its id
 	 * @param id
 	 */
+	@CacheEvict(value = "ingredients", key = "#id")
 	public void deleteIngredient(Long id){
 		log.info("Deleting ingredient with id: {}", id);
 		if(ingredientRepository.existsById(id)) {
@@ -83,6 +89,7 @@ public class IngredientManagementService {
 	 * @param updatedIngredient
 	 * @return
 	 */
+	@CacheEvict(value = "ingredients", key = "#id")
 	public Ingredient updateIngredient(Long id, Ingredient updatedIngredient) {
 		log.info("Updating ingredient with id: {}", id);
 		
