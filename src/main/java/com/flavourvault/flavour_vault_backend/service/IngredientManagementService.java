@@ -87,6 +87,8 @@ public class IngredientManagementService {
 		log.info("Updating ingredient with id: {}", id);
 		
 		Ingredient existingIngredient = ingredientRepository.findById(id).orElse(null);
+		
+		existingIngredient.setName(updatedIngredient.getName());
 		return ingredientRepository.save(existingIngredient);
 
 	}
