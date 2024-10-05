@@ -14,3 +14,6 @@ spring:
    host: localhost
    port: 6379
    timeout: 60000
+app:
+   jwtSecret: "secret"
+   jwtExpirationMs: 86400000 #Token valid for 1 day (24 hours)

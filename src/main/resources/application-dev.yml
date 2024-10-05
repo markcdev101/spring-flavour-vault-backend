@@ -11,3 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+app:
+  jwtSecret: "secret"
+  jwtExpirationMs: 86400000 #Token valid for 1 day (24 hours)
