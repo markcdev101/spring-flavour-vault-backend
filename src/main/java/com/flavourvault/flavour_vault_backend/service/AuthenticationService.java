@@ -12,6 +12,9 @@ import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
 import com.flavourvault.flavour_vault_backend.model.User;
 import com.flavourvault.flavour_vault_backend.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AuthenticationService {
 	
