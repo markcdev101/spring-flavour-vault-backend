@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.flavourvault.flavour_vault_backend.dto.LoginUserDto;
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
-import com.flavourvault.flavour_vault_backend.model.Role;
+import com.flavourvault.flavour_vault_backend.entities.Role;
+import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
-import com.flavourvault.flavour_vault_backend.model.User;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
 import com.flavourvault.flavour_vault_backend.repository.UserRepository;
 

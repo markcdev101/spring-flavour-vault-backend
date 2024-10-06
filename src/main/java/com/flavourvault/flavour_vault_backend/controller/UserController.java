@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flavourvault.flavour_vault_backend.model.User;
+import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.service.UserService;
 
 import java.util.List;

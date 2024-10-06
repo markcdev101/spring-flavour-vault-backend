@@ -1,4 +1,4 @@
-package com.flavourvault.flavour_vault_backend.model;
+package com.flavourvault.flavour_vault_backend.entities;
 
 import java.util.Collection;
 import java.util.Date;

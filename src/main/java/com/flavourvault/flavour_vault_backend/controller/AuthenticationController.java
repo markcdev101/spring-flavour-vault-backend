@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.flavourvault.flavour_vault_backend.dto.LoginResponse;
 import com.flavourvault.flavour_vault_backend.dto.LoginUserDto;
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
-import com.flavourvault.flavour_vault_backend.model.User;
+import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.service.AuthenticationService;
 import com.flavourvault.flavour_vault_backend.service.JwtService;
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flavourvault.flavour_vault_backend.model.Recipe;
+import com.flavourvault.flavour_vault_backend.entities.Recipe;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
 import lombok.extern.slf4j.Slf4j;

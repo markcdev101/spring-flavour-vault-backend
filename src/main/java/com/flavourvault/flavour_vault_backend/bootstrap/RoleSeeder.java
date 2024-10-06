@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import com.flavourvault.flavour_vault_backend.model.Role;
+import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
 
