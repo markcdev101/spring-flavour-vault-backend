@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.flavourvault.flavour_vault_backend.model.Ingredient;
+import com.flavourvault.flavour_vault_backend.entities.Ingredient;
 import com.flavourvault.flavour_vault_backend.repository.IngredientRepository;
 
 import lombok.extern.slf4j.Slf4j;

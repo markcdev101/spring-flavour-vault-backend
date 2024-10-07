@@ -27,9 +27,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flavourvault.flavour_vault_backend.model.Ingredient;
-import com.flavourvault.flavour_vault_backend.model.IngredientDetail;
-import com.flavourvault.flavour_vault_backend.model.Recipe;
+import com.flavourvault.flavour_vault_backend.entities.Ingredient;
+import com.flavourvault.flavour_vault_backend.entities.IngredientDetail;
+import com.flavourvault.flavour_vault_backend.entities.Recipe;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
 /**

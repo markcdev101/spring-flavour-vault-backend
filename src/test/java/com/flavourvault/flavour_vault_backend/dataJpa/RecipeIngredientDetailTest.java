@@ -1,5 +1,8 @@
 package com.flavourvault.flavour_vault_backend.dataJpa;
 
+import com.flavourvault.flavour_vault_backend.entities.Ingredient;
+import com.flavourvault.flavour_vault_backend.entities.IngredientDetail;
+import com.flavourvault.flavour_vault_backend.entities.Recipe;
 import com.flavourvault.flavour_vault_backend.model.*;
 import com.flavourvault.flavour_vault_backend.repository.*;
 import org.junit.jupiter.api.Test;
