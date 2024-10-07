@@ -3,6 +3,7 @@ package com.flavourvault.flavour_vault_backend.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -62,6 +63,7 @@ public class Recipe implements Serializable {
      * i.e. In one recipe you can have 10 steps/instructions on how to cooked a cheesecake.
      */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference 
     private List<Instruction> instructions;
 	
     
