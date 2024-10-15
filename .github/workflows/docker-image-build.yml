@@ -26,9 +26,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Step 3: Build the Spring Boot application using Maven, skipping tests
-      - name: Build with Maven (Skip Tests)
-        run: mvn clean package -DskipTests  # Skip tests during the build process
+      # Step 3: Build the Spring Boot application using Maven
+      - name: Build with Maven
+        run: mvn clean package -DskipTests  # This will generate the JAR file in the target/ directory
 
       # Step 4: Set up Docker Buildx
       - name: Set up Docker Buildx
