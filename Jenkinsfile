@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // Your DockerHub credentials ID
-        DOCKER_IMAGE_NAME = 'markcdev101docker/d3k7m5s9r4p2g2'  // Your Docker image name
+        DOCKER_IMAGE_NAME = 'markcdev101docker/d3k7m5s9r4p2g2'  // Base Docker image name
         GIT_BRANCH = 'develop'  // Specify the branch to build (e.g., main or develop)
     }
 
@@ -30,8 +30,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image, tag it with the Jenkins build number
-                    docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}")
+                    def imageTag = env.BUILD_ID  // Default image tag is the build ID
+                    def branchName = env.GIT_BRANCH
+
+                    // Check if the branch is not 'develop' and append 'ftr' to the image tag
+                    if (branchName != 'develop') {
+                        imageTag = "${branchName}-${env.BUILD_ID}-ftr"
+                    }
+
+                    // Build the Docker image with the appropriate tag
+                    docker.build("${DOCKER_IMAGE_NAME}:${imageTag}")
                 }
             }
         }
@@ -39,9 +47,17 @@ pipeline {
         stage('Push Docker Image to DockerHub') {
             steps {
                 script {
+                    def imageTag = env.BUILD_ID  // Default image tag is the build ID
+                    def branchName = env.GIT_BRANCH
+
+                    // Check if the branch is not 'develop' and append 'ftr' to the image tag
+                    if (branchName != 'develop') {
+                        imageTag = "${branchName}-${env.BUILD_ID}-ftr"
+                    }
+
                     // Log in to DockerHub and push the built image
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}").push()
+                        docker.image("${DOCKER_IMAGE_NAME}:${imageTag}").push()
                     }
                 }
             }
