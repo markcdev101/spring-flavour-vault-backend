@@ -26,57 +26,57 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MYSQL_HOST
+                  key: DB_MYSQL_HOST  # Updated secret key
             - name: DB_MYSQL_PORT
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MYSQL_PORT
+                  key: DB_MYSQL_PORT  # Updated secret key
             - name: DB_MYSQL_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MYSQL_USER
+                  key: DB_MYSQL_USERNAME  # Updated secret key
             - name: DB_MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MYSQL_PASSWORD
+                  key: DB_MYSQL_PASSWORD  # Updated secret key
 
             - name: DB_REDIS_HOST
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: REDIS_HOST
+                  key: DB_REDIS_HOST  # Updated secret key
             - name: DB_REDIS_PORT
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: REDIS_PORT
+                  key: DB_REDIS_PORT  # Updated secret key
             - name: DB_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: REDIS_PASSWORD
+                  key: DB_REDIS_PASSWORD  # Updated secret key
 
             - name: MONGODB_HOST
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MONGODB_HOST
+                  key: DB_MONGODB_HOST  # Updated secret key
             - name: MONGODB_PORT
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MONGODB_PORT
+                  key: DB_MONGODB_PORT  # Updated secret key
             - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: MONGODB_DB
+                  key: DB_MONGODB_DB  # Updated secret key
 
             - name: SECURITY_JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: springboot-dev-secrets
-                  key: SECURITY_JWT_SECRET_KEY
+                  key: SECURITY_JWT_SECRET_KEY  # Updated secret key
