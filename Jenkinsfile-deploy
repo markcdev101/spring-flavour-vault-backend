@@ -17,10 +17,19 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy Service to Kubernetes') {
             steps {
                 script {
-                    echo "Deploying to Kubernetes..."
+                    echo "Deploying service to Kubernetes..."
+                    sh "kubectl apply -f springboot-service.yaml -n ${KUBE_NAMESPACE}"
+                }
+            }
+        }
+
+        stage('Deploy Application to Kubernetes') {
+            steps {
+                script {
+                    echo "Deploying application to Kubernetes..."
                     sh "kubectl apply -f springboot-deployment.yaml -n ${KUBE_NAMESPACE}"
                 }
             }
