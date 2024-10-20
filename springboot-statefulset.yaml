@@ -18,7 +18,7 @@ spec:
         nodePool: dev-pool  # Ensures Spring Boot is deployed to the dev-app-pool node
       containers:
         - name: flavourvault-be  # Updated container name
-          image: markcdev101docker/d3k7m5s9r4p2g2:4  # Always use the latest image from DockerHub
+          image: markcdev101docker/d3k7m5s9r4p2g2:14  # Always use the latest image from DockerHub
           ports:
             - containerPort: 8080  # Expose the port the Spring Boot app listens on
           env:
