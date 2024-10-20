@@ -2,27 +2,26 @@ pipeline {
     agent any
 
     environment {
-        KUBE_NAMESPACE = "app"  // Kubernetes namespace for deployment
-        KUBECONFIG = "/var/lib/jenkins/.kube/config"  // Path to Kubernetes config
-        DOCKER_IMAGE_NAME = 'markcdev101docker/d3k7m5s9r4p2g2'  // Docker image name
-        DEPLOYMENT_NAME = 'springboot-app'  // Kubernetes deployment name
+        KUBE_NAMESPACE = "app"  // Specify your Kubernetes namespace
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"  // Path to your kubeconfig file
+        DOCKER_IMAGE_NAME = "markcdev101docker/d3k7m5s9r4p2g2:latest"  // Use the latest image
     }
 
     stages {
-        stage('Approval to Deploy') {
+        stage('Manual Approval for Deployment') {
             steps {
-                // Require manual approval before deploying to Kubernetes
-                input message: 'Approve deployment to Kubernetes?', ok: 'Deploy'
+                script {
+                    echo "Awaiting manual approval for deployment..."
+                    input message: 'Approve Deployment?', ok: 'Deploy'
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def imageTag = input message: 'Enter the Docker image tag to deploy:', parameters: [string(name: 'IMAGE_TAG', defaultValue: '')]
-                    // Deploy the Docker image to the Kubernetes cluster
-                    sh "kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${DOCKER_IMAGE_NAME}:${imageTag} -n ${KUBE_NAMESPACE}"
-                    sh "kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${KUBE_NAMESPACE}"
+                    echo "Deploying to Kubernetes..."
+                    sh "kubectl apply -f springboot-deployment.yaml -n ${KUBE_NAMESPACE}"
                 }
             }
         }
@@ -30,20 +29,23 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    // Verify if the application is running in Kubernetes
-                    def pods = sh(script: "kubectl get pods -n ${KUBE_NAMESPACE} -l app=${DEPLOYMENT_NAME} --no-headers", returnStdout: true).trim()
-                    echo "Deployed pods:\n${pods}"
+                    echo "Verifying deployment..."
+                    def deploymentCheck = sh(script: "kubectl rollout status deployment/flavourvault-backend -n ${KUBE_NAMESPACE}", returnStdout: true).trim()
+                    echo "Deployment status:\n${deploymentCheck}"
                 }
             }
         }
     }
 
     post {
+        always {
+            echo 'Pipeline completed.'
+        }
         success {
-            echo 'Deployment to Kubernetes was successful!'
+            echo "Deployment to Kubernetes was successful."
         }
         failure {
-            echo 'Deployment failed!'
+            echo "Deployment to Kubernetes failed."
         }
     }
 }
