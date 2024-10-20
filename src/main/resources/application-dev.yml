@@ -15,9 +15,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   redis:
+    database: 0
     host: ${DB_REDIS_HOST}
     port: ${DB_REDIS_PORT}
-    password: ${DB_REDIS_PASSWORD} 
+    password: ${DB_REDIS_PASSWORD}
     timeout: 60000
 security:
   jwt:
