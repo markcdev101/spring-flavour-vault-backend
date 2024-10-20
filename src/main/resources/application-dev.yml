@@ -1,5 +1,7 @@
 spring:
-  profiles: dev
+  config:
+   activate:
+     on-profile: dev
   datasource:
     url: jdbc:mysql://${DB_MYSQL_HOST}:${DB_MYSQL_PORT}/recipe_db
     username: ${DB_MYSQL_USERNAME}
@@ -13,10 +15,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   redis:
-   host: ${DB_REDIS_HOST}
-   port: ${DB_REDIS_PORT}
-   password: ${DB_REDIS_PASSWORD} 
-   timeout: 60000
+    host: ${DB_REDIS_HOST}
+    port: ${DB_REDIS_PORT}
+    password: ${DB_REDIS_PASSWORD} 
+    timeout: 60000
 security:
   jwt:
     secret-key: ${SECURITY_JWT_SECRET_KEY}
