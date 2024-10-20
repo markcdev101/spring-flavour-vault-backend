@@ -1,8 +1,11 @@
 spring:
+  config:
+   activate:
+     on-profile: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/recipe_db
-    username: user
-    password: password
+    url: jdbc:mysql://${DB_MYSQL_HOST}:${DB_MYSQL_PORT}/recipe_db
+    username: ${DB_MYSQL_USERNAME}
+    password: ${DB_MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -11,7 +14,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  redis:
+    database: 0
+    host: ${DB_REDIS_HOST}
+    port: ${DB_REDIS_PORT}
+    password: ${DB_REDIS_PASSWORD}
+    timeout: 60000
 security:
   jwt:
-    secret-key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+    secret-key: ${SECURITY_JWT_SECRET_KEY}
     expiration-time: 3600000
