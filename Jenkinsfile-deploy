@@ -4,7 +4,7 @@ pipeline {
     environment {
         KUBE_NAMESPACE = "app"  // Specify your Kubernetes namespace
         KUBECONFIG = "/var/lib/jenkins/.kube/config"  // Path to your kubeconfig file
-        DOCKER_IMAGE_NAME = "markcdev101docker/d3k7m5s9r4p2g2:latest"  // Use the latest image
+        DOCKER_IMAGE_NAME = "markcdev101docker/d3k7m5s9r4p2g2:4"  // Use the latest image
     }
 
     stages {
