@@ -63,3 +63,5 @@ spec:
                 secretKeyRef:
                   name: springboot-dev-secrets
                   key: SECURITY_JWT_SECRET_KEY  # Updated secret key
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev  # Set the active profile to dev
