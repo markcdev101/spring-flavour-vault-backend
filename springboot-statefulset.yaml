@@ -58,23 +58,6 @@ spec:
                 secretKeyRef:
                   name: springboot-dev-secrets
                   key: DB_REDIS_PASSWORD  # Updated secret key
-
-            - name: MONGODB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: springboot-dev-secrets
-                  key: DB_MONGODB_HOST  # Updated secret key
-            - name: MONGODB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: springboot-dev-secrets
-                  key: DB_MONGODB_PORT  # Updated secret key
-            - name: MONGODB_DB
-              valueFrom:
-                secretKeyRef:
-                  name: springboot-dev-secrets
-                  key: DB_MONGODB_DB  # Updated secret key
-
             - name: SECURITY_JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
