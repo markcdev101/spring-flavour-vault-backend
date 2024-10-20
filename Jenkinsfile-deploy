@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     echo "Deploying application to Kubernetes..."
-                    sh "kubectl apply -f springboot-deployment.yaml -n ${KUBE_NAMESPACE}"
+                    sh "kubectl apply -f springboot-statefulset.yaml -n ${KUBE_NAMESPACE}"  // Changed to use the StatefulSet YAML
                 }
             }
         }
@@ -39,8 +39,8 @@ pipeline {
             steps {
                 script {
                     echo "Verifying deployment..."
-                    def deploymentCheck = sh(script: "kubectl rollout status deployment/flavourvault-backend -n ${KUBE_NAMESPACE}", returnStdout: true).trim()
-                    echo "Deployment status:\n${deploymentCheck}"
+                    def statefulSetCheck = sh(script: "kubectl rollout status statefulset/flavourvault-backend -n ${KUBE_NAMESPACE}", returnStdout: true).trim()
+                    echo "StatefulSet status:\n${statefulSetCheck}"
                 }
             }
         }
