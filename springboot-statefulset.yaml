@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: flavourvault-backend
+  namespace: app
+spec:
+  serviceName: flavourvault-backend  # Headless service name for stable network identity
+  replicas: 1  # Number of replicas
+  selector:
+    matchLabels:
+      app: flavourvault-backend
+  template:
+    metadata:
+      labels:
+        app: flavourvault-backend
+    spec:
+      nodeSelector:
+        nodePool: dev-pool  # Ensures Spring Boot is deployed to the dev-app-pool node
+      containers:
+        - name: flavourvault-be  # Updated container name
+          image: markcdev101docker/d3k7m5s9r4p2g2:4  # Always use the latest image from DockerHub
+          ports:
+            - containerPort: 8080  # Expose the port the Spring Boot app listens on
+          env:
+            - name: DB_MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MYSQL_HOST
+            - name: DB_MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MYSQL_PORT
+            - name: DB_MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MYSQL_USER
+            - name: DB_MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MYSQL_PASSWORD
+
+            - name: DB_REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: REDIS_HOST
+            - name: DB_REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: REDIS_PORT
+            - name: DB_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: REDIS_PASSWORD
+
+            - name: MONGODB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MONGODB_HOST
+            - name: MONGODB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MONGODB_PORT
+            - name: MONGODB_DB
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: MONGODB_DB
+
+            - name: SECURITY_JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-dev-secrets
+                  key: SECURITY_JWT_SECRET_KEY
