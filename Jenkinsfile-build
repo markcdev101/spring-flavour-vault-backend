@@ -38,7 +38,7 @@ pipeline {
                         imageTag = "${branchName}-${env.BUILD_ID}-ftr"
                     }
 
-                    // Build the Docker image with the appropriate tag
+                    // Build the Docker image and store the reference in 'dockerImage'
                     def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${imageTag}")
 
                     // Tag the image as 'latest'
@@ -58,7 +58,7 @@ pipeline {
                         imageTag = "${branchName}-${env.BUILD_ID}-ftr"
                     }
 
-                     // Log in to DockerHub and push the built images
+                    // Log in to DockerHub and push the built images
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
                         // Push the branch-specific image
                         docker.image("${DOCKER_IMAGE_NAME}:${imageTag}").push()
@@ -76,10 +76,6 @@ pipeline {
         }
         failure {
             echo 'Build Failed'
-        }
-        always {
-            // Optionally, clean up workspace or other necessary steps
-            cleanWs()
         }
     }
 }
