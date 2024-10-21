@@ -40,6 +40,9 @@ pipeline {
 
                     // Build the Docker image with the appropriate tag
                     docker.build("${DOCKER_IMAGE_NAME}:${imageTag}")
+
+                    // Tag the image as 'latest'
+                    dockerImage.tag("${DOCKER_IMAGE_NAME}:latest")
                 }
             }
         }
