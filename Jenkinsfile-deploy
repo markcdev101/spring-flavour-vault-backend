@@ -4,7 +4,7 @@ pipeline {
     environment {
         KUBE_NAMESPACE = "app"  // Specify your Kubernetes namespace
         KUBECONFIG = "/var/lib/jenkins/.kube/config"  // Path to your kubeconfig file
-        DOCKER_IMAGE_NAME = "markcdev101docker/d3k7m5s9r4p2g2:latest"  // Use the latest image
+        DOCKER_IMAGE_NAME = "markcdev101docker/d3k7m5s9r4p2g2:latest"  // Use your Spring Boot app image
     }
 
     stages {
@@ -13,6 +13,16 @@ pipeline {
                 script {
                     echo "Awaiting manual approval for deployment..."
                     input message: 'Approve Deployment?', ok: 'Deploy'
+                }
+            }
+        }
+
+        stage('Delete Existing Deployment') {
+            steps {
+                script {
+                    echo "Deleting existing Kubernetes service and StatefulSet..."
+                    sh "kubectl delete statefulset flavourvault-backend -n ${KUBE_NAMESPACE} --ignore-not-found=true"
+                    sh "kubectl delete service flavourvault-backend-service -n ${KUBE_NAMESPACE} --ignore-not-found=true"
                 }
             }
         }
@@ -30,7 +40,7 @@ pipeline {
             steps {
                 script {
                     echo "Deploying application to Kubernetes..."
-                    sh "kubectl apply -f springboot-statefulset.yaml -n ${KUBE_NAMESPACE}"  // Changed to use the StatefulSet YAML
+                    sh "kubectl apply -f springboot-statefulset.yaml -n ${KUBE_NAMESPACE}"
                 }
             }
         }
