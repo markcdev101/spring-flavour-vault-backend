@@ -42,41 +42,41 @@ public class RecipeManagementService {
 	 * @return The created recipe.
 	 */
 	public Recipe createRecipe(Recipe recipe) {
-		log.info("Creating recipe for : {}", recipe.getName());
+        log.info("Creating recipe for: {}", recipe.getName());
 
-		// Save Ingredients if they don't already exist
-		for (IngredientDetail detail : recipe.getIngredientDetails()) {
-			Ingredient ingredient = detail.getIngredient();
+        // Check each IngredientDetail for existing ingredients
+        for (IngredientDetail detail : recipe.getIngredientDetails()) {
+            Ingredient ingredient = detail.getIngredient();
 
-			if (ingredient.getName() != null) {
-				// Try to find the ingredient by name
-				Optional<Ingredient> existingIngredient = ingredientRepository.findByName(ingredient.getName());
-				if (existingIngredient.isPresent()) {
-					// If the ingredient exists, use the existing one
-					detail.setIngredient(existingIngredient.get());
-				} else {
-					// If the ingredient doesn't exist, save the new ingredient
-					Ingredient savedIngredient = ingredientRepository.save(ingredient);
-					detail.setIngredient(savedIngredient);
-				}
-			} else {
-				// Handle the case where the ingredient name is null (if needed)
-				log.warn("Ingredient name is null for one of the details.");
-				throw new IllegalArgumentException("Ingredient name cannot be null.");
-			}
+            if (ingredient.getName() != null) {
+                // Try to find the ingredient by name
+                Optional<Ingredient> existingIngredient = ingredientRepository.findByName(ingredient.getName());
+                
+                if (existingIngredient.isPresent()) {
+                    // Use the existing ingredient if found
+                    detail.setIngredient(existingIngredient.get());
+                } else {
+                    // Save the new ingredient if it doesn't exist
+                    Ingredient savedIngredient = ingredientRepository.save(ingredient);
+                    detail.setIngredient(savedIngredient);
+                }
+            } else {
+                log.warn("Ingredient name is null for one of the details.");
+                throw new IllegalArgumentException("Ingredient name cannot be null.");
+            }
 
-			// Set the recipe reference in IngredientDetail
-			detail.setRecipe(recipe);
-		}
+            // Set the recipe reference in IngredientDetail
+            detail.setRecipe(recipe);
+        }
 
-		// Set the recipe for each instruction to maintain the relationship
-		for (Instruction instruction : recipe.getInstructions()) {
-			instruction.setRecipe(recipe);
-		}
+        // Set the recipe for each instruction to maintain the relationship
+        for (Instruction instruction : recipe.getInstructions()) {
+            instruction.setRecipe(recipe);
+        }
 
-		// Save the recipe and associated IngredientDetails
-		return recipeRepository.save(recipe);
-	}
+        // Save the recipe and associated IngredientDetails
+        return recipeRepository.save(recipe);
+    }
 
 	/**
 	 * Retrieve a recipe by its ID.
