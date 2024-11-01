@@ -130,30 +130,79 @@ public class RecipeManagementService {
 	 */
 	@CacheEvict(value = "recipes", key = "#id")
 	public Recipe updateRecipe(Long id, Recipe updatedRecipe) {
-		log.info("Updating recipe with id : {} with a new recipe: {}", id, updatedRecipe.getName());
+	    log.info("Updating recipe with id: {} with new recipe data", id);
 
+	    return recipeRepository.findById(id).map(existingRecipe -> {
+	        // Update basic recipe details
+	        existingRecipe.setName(updatedRecipe.getName());
+	        existingRecipe.setDescription(updatedRecipe.getDescription());
+	        existingRecipe.setPreparationTime(updatedRecipe.getPreparationTime());
+	        existingRecipe.setCookingTime(updatedRecipe.getCookingTime());
 
-		return recipeRepository.findById(id).map(existingRecipe -> {
-			// Update basic recipe details
-			existingRecipe.setName(updatedRecipe.getName());
-			existingRecipe.setDescription(updatedRecipe.getDescription());
-			existingRecipe.setPreparationTime(updatedRecipe.getPreparationTime());
-			existingRecipe.setCookingTime(updatedRecipe.getCookingTime());
+	        // Update instructions
+	        updateInstructions(existingRecipe, updatedRecipe.getInstructions());
 
-			// Update the instructions
-			existingRecipe.setInstructions(updatedRecipe.getInstructions());
+	        // Update ingredient details
+	        updateIngredientDetails(existingRecipe, updatedRecipe.getIngredientDetails());
 
-			// Clear and update IngredientDetails
-			existingRecipe.getIngredientDetails().clear();  // Remove existing ingredient details
-			for (IngredientDetail detail : updatedRecipe.getIngredientDetails()) {
-				detail.setRecipe(existingRecipe);  // Set the correct reference
-				existingRecipe.getIngredientDetails().add(detail);
-			}
-			log.info("Updated recipe with id : {}", id);
-			return recipeRepository.save(existingRecipe);
-		}).orElse(null);  // Return null if the recipe doesn't exist
+	        log.info("Successfully updated recipe with id: {}", id);
+	        return recipeRepository.save(existingRecipe); // Save changes
+	    }).orElseThrow(() -> new IllegalArgumentException("Recipe with id " + id + " does not exist"));
 	}
 
+	private void updateInstructions(Recipe existingRecipe, List<Instruction> updatedInstructions) {
+	    existingRecipe.getInstructions().removeIf(instr -> updatedInstructions.stream()
+	        .noneMatch(updatedInstr -> updatedInstr.getId() != null && updatedInstr.getId().equals(instr.getId())));
+	    
+	    for (Instruction updatedInstr : updatedInstructions) {
+	        if (updatedInstr.getId() != null) {
+	            existingRecipe.getInstructions().stream()
+	                .filter(instr -> instr.getId().equals(updatedInstr.getId()))
+	                .findFirst()
+	                .ifPresent(instr -> instr.setStep(updatedInstr.getStep()));
+	        } else {
+	            // For new instructions
+	            updatedInstr.setRecipe(existingRecipe);
+	            existingRecipe.getInstructions().add(updatedInstr);
+	        }
+	    }
+	}
+
+	private void updateIngredientDetails(Recipe existingRecipe, List<IngredientDetail> updatedDetails) {
+	    existingRecipe.getIngredientDetails().removeIf(detail -> updatedDetails.stream()
+	        .noneMatch(updatedDetail -> updatedDetail.getId() != null && updatedDetail.getId().equals(detail.getId())));
+
+	    for (IngredientDetail updatedDetail : updatedDetails) {
+	        Ingredient ingredient = updatedDetail.getIngredient();
+
+	        // Check if the ingredient is transient (new and unsaved)
+	        if (ingredient.getId() == null) {
+	            // Save the new ingredient
+	            Ingredient savedIngredient = ingredientRepository.save(ingredient);
+	            updatedDetail.setIngredient(savedIngredient);
+	        } else {
+	            // Ensure the ingredient is attached by finding it in the database
+	            Optional<Ingredient> existingIngredient = ingredientRepository.findById(ingredient.getId());
+	            updatedDetail.setIngredient(existingIngredient.orElse(ingredient));
+	        }
+
+	        if (updatedDetail.getId() != null) {
+	            existingRecipe.getIngredientDetails().stream()
+	                .filter(detail -> detail.getId().equals(updatedDetail.getId()))
+	                .findFirst()
+	                .ifPresent(detail -> {
+	                    detail.setQuantity(updatedDetail.getQuantity());
+	                    detail.setUnit(updatedDetail.getUnit());
+	                    detail.setPreparation(updatedDetail.getPreparation());
+	                    detail.setIngredient(updatedDetail.getIngredient());
+	                });
+	        } else {
+	            // For new ingredient details
+	            updatedDetail.setRecipe(existingRecipe);
+	            existingRecipe.getIngredientDetails().add(updatedDetail);
+	        }
+	    }
+	}
 
 
 }
