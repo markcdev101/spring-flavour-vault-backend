@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.flavourvault.flavour_vault_backend.dto.LoginUserDto;
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
+import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.exceptions.DuplicateUsernameException;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
+import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
 import com.flavourvault.flavour_vault_backend.repository.UserRepository;
 
@@ -34,6 +37,9 @@ public class AuthenticationService {
     
 	@Autowired
     private AuthenticationManager authenticationManager;
+	
+	@Autowired
+    private ProfileRepository profileRepository;
 
 
     public User signup(RegisterUserDto input) {
@@ -43,25 +49,40 @@ public class AuthenticationService {
             return null;
         }
     	
+        
+        // Check if username already exists
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new DuplicateUsernameException("Username " + input.getUsername());
+        }
+        
+		Profile profile = new Profile();
+		profile.setEmail(input.getEmail());
+		profileRepository.save(profile);
     	
     	User user = new User();
         user.setFullName(input.getFullName());
-        user.setEmail(input.getEmail());
+        user.setUsername(input.getUsername());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());
+        user.setProfile(profile);
+        
+        
+        User savedUser = userRepository.save(user);
+        
+        log.info("User and Profile created successfully for email: {}", input.getEmail());
 
-        return userRepository.save(user);
+        return savedUser;
     }
 
     public User authenticate(LoginUserDto input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        input.getEmail(),
+                        input.getUsername(),
                         input.getPassword()
                 )
         );
 
-        return userRepository.findByEmail(input.getEmail())
+        return userRepository.findByUsername(input.getUsername())
                 .orElseThrow();
     }
 }

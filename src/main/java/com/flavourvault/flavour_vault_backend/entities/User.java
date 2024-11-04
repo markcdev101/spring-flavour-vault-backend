@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +41,7 @@ public class User implements UserDetails {
     private String fullName;
 
     @Column(unique = true, length = 100, nullable = false)
-    private String email;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -52,6 +53,11 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="profile_id", referencedColumnName = "id")
+    private Profile profile;
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

@@ -5,9 +5,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
+import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.exceptions.DuplicateUsernameException;
+import com.flavourvault.flavour_vault_backend.exceptions.ProfileNotFoundException;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
+import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
 import com.flavourvault.flavour_vault_backend.repository.UserRepository;
 
@@ -22,6 +26,9 @@ public class UserService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private ProfileRepository profileRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -41,12 +48,28 @@ public class UserService {
 		if (optionalRole.isEmpty()) {
 			return null;
 		}
+		
+		 // Check if a profile exists with the provided email
+        Optional<Profile> optionalProfile = profileRepository.findByEmail(input.getEmail());
+        
+        if (optionalProfile.isEmpty()) {
+            // Handle the case where no profile is found (optional)
+            System.err.println("Profile not found for email: " + input.getEmail());
+            throw new ProfileNotFoundException(input.getEmail());
+        }
+        
+        // Check if username already exists
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+        	System.err.println("Username already taken for: " + input.getEmail());
+            throw new DuplicateUsernameException("Username " + input.getUsername());
+        }
 
 		User user = new User();
 		user.setFullName(input.getFullName());
-		user.setEmail(input.getEmail());
+		user.setUsername(input.getUsername());
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 		user.setRole(optionalRole.get());
+		user.setProfile(optionalProfile.get()); // Assigning the found profile
 
 		return userRepository.save(user);
 	}
