@@ -21,7 +21,7 @@ public class ProfileService {
     // Method to create a Profile and link it with a User
     public Profile createProfile(User user) {
         Profile profile = new Profile();
-        profile.setUsername(user.getUsername()); // using email as username for example
+//        profile.setEmail(user.getEmail()); // using email as username for example
         return profileRepository.save(profile);
     }
 
@@ -29,7 +29,7 @@ public class ProfileService {
     public Profile updateProfile(Integer profileId, Profile updatedProfile) {
         return profileRepository.findById(profileId)
                 .map(profile -> {
-                    profile.setUsername(updatedProfile.getUsername());
+//                    profile.setUsername(updatedProfile.getUsername());
                     return profileRepository.save(profile);
                 })
                 .orElseThrow(() -> new RuntimeException("Profile not found with ID: " + profileId));

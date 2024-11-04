@@ -50,12 +50,12 @@ public class AuthenticationService {
     	
         
 		Profile profile = new Profile();
-		profile.setUsername(input.getUserName());
+		profile.setEmail(input.getEmail());
 		profileRepository.save(profile);
     	
     	User user = new User();
         user.setFullName(input.getFullName());
-        user.setEmail(input.getEmail());
+        user.setUsername(input.getUsername());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());
         user.setProfile(profile);
@@ -76,7 +76,7 @@ public class AuthenticationService {
                 )
         );
 
-        return userRepository.findByEmail(input.getEmail())
+        return userRepository.findByUsername(input.getUsername())
                 .orElseThrow();
     }
 }

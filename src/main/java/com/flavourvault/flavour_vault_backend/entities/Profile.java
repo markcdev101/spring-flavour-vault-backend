@@ -43,7 +43,7 @@ public class Profile implements Serializable {
     private Integer id;
 
     @Column(unique = true, length = 100, nullable = false)
-    private String username;
+    private String email;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
