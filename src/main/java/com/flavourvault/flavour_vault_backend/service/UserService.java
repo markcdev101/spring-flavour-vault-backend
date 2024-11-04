@@ -8,6 +8,7 @@ import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
 import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.exceptions.ProfileNotFoundException;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
 import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
@@ -53,7 +54,7 @@ public class UserService {
         if (optionalProfile.isEmpty()) {
             // Handle the case where no profile is found (optional)
             System.err.println("No profile found for email: " + input.getEmail());
-            return null;
+            throw new ProfileNotFoundException("Profile not found for email: " + input.getEmail());
         }
 
 		User user = new User();
