@@ -14,6 +14,7 @@ import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
 import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.exceptions.DuplicateUsernameException;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
 import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
@@ -48,6 +49,11 @@ public class AuthenticationService {
             return null;
         }
     	
+        
+        // Check if username already exists
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new DuplicateUsernameException("Username " + input.getUsername());
+        }
         
 		Profile profile = new Profile();
 		profile.setEmail(input.getEmail());
