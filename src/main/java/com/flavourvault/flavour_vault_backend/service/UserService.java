@@ -54,12 +54,13 @@ public class UserService {
         
         if (optionalProfile.isEmpty()) {
             // Handle the case where no profile is found (optional)
-            System.err.println("No profile found for email: " + input.getEmail());
-            throw new ProfileNotFoundException("Profile not found for email: " + input.getEmail());
+            System.err.println("Profile not found for email: " + input.getEmail());
+            throw new ProfileNotFoundException(input.getEmail());
         }
         
         // Check if username already exists
         if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+        	System.err.println("Username already taken for: " + input.getEmail());
             throw new DuplicateUsernameException("Username " + input.getUsername());
         }
 
