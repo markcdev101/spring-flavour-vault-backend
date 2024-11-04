@@ -13,4 +13,5 @@ import com.flavourvault.flavour_vault_backend.entities.Profile;
  */
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Integer> {
+	Optional<Profile> findByEmail(String email);
 }
