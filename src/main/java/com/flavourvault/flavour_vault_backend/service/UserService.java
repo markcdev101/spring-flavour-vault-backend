@@ -8,6 +8,7 @@ import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
 import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.exceptions.DuplicateUsernameException;
 import com.flavourvault.flavour_vault_backend.exceptions.ProfileNotFoundException;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
 import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
@@ -55,6 +56,11 @@ public class UserService {
             // Handle the case where no profile is found (optional)
             System.err.println("No profile found for email: " + input.getEmail());
             throw new ProfileNotFoundException("Profile not found for email: " + input.getEmail());
+        }
+        
+        // Check if username already exists
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new DuplicateUsernameException("Username " + input.getUsername());
         }
 
 		User user = new User();
