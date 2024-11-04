@@ -34,6 +34,9 @@ public class AuthenticationService {
     
 	@Autowired
     private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private ProfileService profileService;
 
 
     public User signup(RegisterUserDto input) {
@@ -49,8 +52,16 @@ public class AuthenticationService {
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());
+        
+        
+        User savedUser = userRepository.save(user);
+        
+        // Create and link the profile to the newly created user
+        profileService.createProfile(savedUser);
+        
+        log.info("User and Profile created successfully for email: {}", input.getEmail());
 
-        return userRepository.save(user);
+        return savedUser;
     }
 
     public User authenticate(LoginUserDto input) {

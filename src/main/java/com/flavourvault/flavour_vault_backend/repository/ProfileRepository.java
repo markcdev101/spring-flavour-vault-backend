@@ -11,4 +11,5 @@ import com.flavourvault.flavour_vault_backend.entities.Profile;
  */
 @Repository
 public interface ProfileRepository extends CrudRepository<Profile, Integer> {
+	Profile findByUserId(Integer userId); 
 }
