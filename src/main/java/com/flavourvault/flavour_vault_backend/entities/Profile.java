@@ -52,8 +52,4 @@ public class Profile implements Serializable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
-    
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
 }

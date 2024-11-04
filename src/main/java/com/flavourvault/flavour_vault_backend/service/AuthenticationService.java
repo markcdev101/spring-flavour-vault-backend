@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.flavourvault.flavour_vault_backend.dto.LoginUserDto;
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
+import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.Role;
 import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.model.RoleEnum;
+import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
 import com.flavourvault.flavour_vault_backend.repository.RoleRepository;
 import com.flavourvault.flavour_vault_backend.repository.UserRepository;
 
@@ -36,7 +38,7 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
 	
 	@Autowired
-	private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
 
     public User signup(RegisterUserDto input) {
@@ -46,18 +48,20 @@ public class AuthenticationService {
             return null;
         }
     	
+        
+		Profile profile = new Profile();
+		profile.setUsername(input.getUserName());
+		profileRepository.save(profile);
     	
     	User user = new User();
         user.setFullName(input.getFullName());
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());
+        user.setProfile(profile);
         
         
         User savedUser = userRepository.save(user);
-        
-        // Create and link the profile to the newly created user
-        profileService.createProfile(savedUser);
         
         log.info("User and Profile created successfully for email: {}", input.getEmail());
 
