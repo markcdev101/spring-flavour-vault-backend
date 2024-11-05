@@ -2,6 +2,8 @@ package com.flavourvault.flavour_vault_backend.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,15 +42,34 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
+	public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
 		User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
+		// Generate JWT token
 		String jwtToken = jwtService.generateToken(authenticatedUser);
 
-		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setToken(jwtToken);
-		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+		// Set the token in an HTTP-only cookie
+        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(jwtService.getExpirationTime() / 1000) // Set max age in seconds
+                .sameSite("Strict")
+                .secure(true) // Ensure the cookie is secure (only over HTTPS)
+                .build();
 
-		return ResponseEntity.ok(loginResponse);
+        // Set the username in another HTTP-only cookie
+        ResponseCookie usernameCookie = ResponseCookie.from("username", authenticatedUser.getUsername())
+                .httpOnly(true)
+                .path("/")
+                .maxAge(jwtService.getExpirationTime() / 1000)
+                .sameSite("Strict")
+                .secure(true)
+                .build();
+
+        // Set cookies in the response header
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
+                .body("Login successful");
 	}
 }
