@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.flavourvault.flavour_vault_backend.dto.LoginResponse;
 import com.flavourvault.flavour_vault_backend.dto.LoginUserDto;
+import com.flavourvault.flavour_vault_backend.dto.ProfileDto;
 import com.flavourvault.flavour_vault_backend.dto.RegisterUserDto;
+import com.flavourvault.flavour_vault_backend.dto.UserInfoDto;
+import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.service.AuthenticationService;
 import com.flavourvault.flavour_vault_backend.service.JwtService;
@@ -87,8 +90,25 @@ public class AuthenticationController {
 		if (user == null) {
 			return ResponseEntity.status(401).body("Unauthorized");
 		}
+		
+		UserInfoDto userInfoDto = new UserInfoDto();
+		userInfoDto.setUsername(user.getUsername());
+		userInfoDto.setId(user.getId());
+		userInfoDto.setRole(user.getRole().getName().toString());
+
+		
+		Profile profile = user.getProfile();
+	    if (profile != null) {
+	        ProfileDto profileDto = new ProfileDto();
+//	        profileDto.setId(profile.getId());
+	        profileDto.setEmail(profile.getEmail());
+	        profileDto.setFullName(profile.getFullName());
+	        // Map other necessary fields
+
+	        userInfoDto.setProfile(profileDto);
+	    }
 
 		// Send user profile or limited information as needed
-		return ResponseEntity.ok(user);
+		return ResponseEntity.ok(userInfoDto);
 	}
 }
