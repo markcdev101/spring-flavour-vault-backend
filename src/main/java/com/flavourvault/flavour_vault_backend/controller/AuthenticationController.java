@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,5 +73,22 @@ public class AuthenticationController {
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
                 .body("Login successful");
+	}
+	
+	@GetMapping("/me")
+	public ResponseEntity<?> getAuthenticatedUser(@CookieValue(name = "jwtToken", required = false) String token) {
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body("Unauthorized");
+		}
+
+		// Decode token to get user info
+		String username = jwtService.extractUsername(token);
+		User user = authenticationService.getUserByUsername(username);
+		if (user == null) {
+			return ResponseEntity.status(401).body("Unauthorized");
+		}
+
+		// Send user profile or limited information as needed
+		return ResponseEntity.ok(user);
 	}
 }
