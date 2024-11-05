@@ -57,10 +57,10 @@ public class AuthenticationService {
         
 		Profile profile = new Profile();
 		profile.setEmail(input.getEmail());
+		profile.setFullName(input.getFullName());		
 		profileRepository.save(profile);
     	
     	User user = new User();
-        user.setFullName(input.getFullName());
         user.setUsername(input.getUsername());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());

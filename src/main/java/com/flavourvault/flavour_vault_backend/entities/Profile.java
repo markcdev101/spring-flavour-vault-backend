@@ -44,6 +44,9 @@ public class Profile implements Serializable {
 
     @Column(unique = true, length = 100, nullable = false)
     private String email;
+    
+    @Column(nullable = false)
+    private String fullName;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
