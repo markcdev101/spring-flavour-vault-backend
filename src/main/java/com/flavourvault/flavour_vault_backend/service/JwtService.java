@@ -53,6 +53,7 @@ public class JwtService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));  // Collect roles as a list
+        claims.put("username", userDetails.getUsername()); // Include the username in the claims
 
         return generateToken(claims, userDetails);
     }
