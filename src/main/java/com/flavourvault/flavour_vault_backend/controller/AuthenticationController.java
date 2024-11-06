@@ -59,7 +59,7 @@ public class AuthenticationController {
                 .path("/")
                 .maxAge(jwtService.getExpirationTime() / 1000) // Set max age in seconds
                 .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
-//                .secure(true) // Ensure the cookie is secure (only over HTTPS)
+                .secure(false) // Ensure the cookie is secure (only over HTTPS)
                 .build();
 
         // Set the username in another HTTP-only cookie
@@ -68,7 +68,7 @@ public class AuthenticationController {
                 .path("/")
                 .maxAge(jwtService.getExpirationTime() / 1000)
                 .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
-//                .secure(true)
+                .secure(false)
                 .build();
 
         // Set cookies in the response header
@@ -86,7 +86,7 @@ public class AuthenticationController {
 	                .path("/")
 	                .maxAge(0) // Immediately expire the cookie
 	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
-//	                .secure(true)
+	                .secure(false)
 	                .build();
 
 	        ResponseCookie usernameCookie = ResponseCookie.from("username", "")
@@ -94,7 +94,7 @@ public class AuthenticationController {
 	                .path("/")
 	                .maxAge(0)
 	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
-//	                .secure(true)
+	                .secure(false)
 	                .build();
 
 	        return ResponseEntity.ok()
