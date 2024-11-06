@@ -78,6 +78,31 @@ public class AuthenticationController {
                 .body("Login successful");
 	}
 	
+	  @PostMapping("/logout")
+	    public ResponseEntity<?> logout() {
+	        // Create expired cookies to clear the JWT token and username cookies
+	        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", "")
+	                .httpOnly(true)
+	                .path("/")
+	                .maxAge(0) // Immediately expire the cookie
+	                .sameSite("Strict")
+	                .secure(true)
+	                .build();
+
+	        ResponseCookie usernameCookie = ResponseCookie.from("username", "")
+	                .httpOnly(true)
+	                .path("/")
+	                .maxAge(0)
+	                .sameSite("Strict")
+	                .secure(true)
+	                .build();
+
+	        return ResponseEntity.ok()
+	                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+	                .header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
+	                .body("Logged out successfully");
+	    }
+	
 	@GetMapping("/me")
 	public ResponseEntity<?> getAuthenticatedUser(@CookieValue(name = "jwtToken", required = false) String token) {
 		if (token == null || !jwtService.isTokenValid(token)) {
