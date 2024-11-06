@@ -64,24 +64,29 @@ public class ProfileController {
         return ResponseEntity.ok(userInfoDto);
     }
 
-
-    // POST endpoint to create a new Profile (typically linked to a user creation)
-    @PostMapping
-    public ResponseEntity<Profile> createProfile(@RequestBody User user) {
-        Profile profile = profileService.createProfile(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(profile);
-    }
-
     // PUT endpoint to update an existing Profile
-    @PutMapping("/{profileId}")
-    public ResponseEntity<Profile> updateProfile(
-            @PathVariable Integer profileId,
-            @RequestBody Profile updatedProfile) {
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMyProfile(@CookieValue(name = "jwtToken", required = false) String token,
+                                             @RequestBody ProfileDto updatedProfileDto) {
+        if (token == null || !jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        String username = jwtService.extractUsername(token);
+        User user = authenticationService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         try {
-            Profile profile = profileService.updateProfile(profileId, updatedProfile);
-            return ResponseEntity.ok(profile);
+            Profile updatedProfile = profileService.updateUserProfile(user, updatedProfileDto);
+            ProfileDto profileDto = new ProfileDto();
+            profileDto.setEmail(updatedProfile.getEmail());
+            profileDto.setFullName(updatedProfile.getFullName());
+
+            return ResponseEntity.ok(profileDto);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

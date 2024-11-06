@@ -1,5 +1,6 @@
 package com.flavourvault.flavour_vault_backend.service;
 
+import com.flavourvault.flavour_vault_backend.dto.ProfileDto;
 import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.User;
 import com.flavourvault.flavour_vault_backend.repository.ProfileRepository;
@@ -26,13 +27,17 @@ public class ProfileService {
     }
 
     // Method to update a Profile
-    public Profile updateProfile(Integer profileId, Profile updatedProfile) {
-        return profileRepository.findById(profileId)
-                .map(profile -> {
-//                    profile.setUsername(updatedProfile.getUsername());
-                    return profileRepository.save(profile);
-                })
-                .orElseThrow(() -> new RuntimeException("Profile not found with ID: " + profileId));
+    // Method to update a Profile of the currently authenticated user
+    public Profile updateUserProfile(User user, ProfileDto updatedProfileDto) {
+        Profile profile = user.getProfile();
+        if (profile == null) {
+            throw new RuntimeException("Profile not found for user");
+        }
+
+        // Update profile fields based on the received DTO
+        profile.setEmail(updatedProfileDto.getEmail());
+        profile.setFullName(updatedProfileDto.getFullName());
+        return profileRepository.save(profile);
     }
 
     // Method to fetch a Profile by Profile ID
