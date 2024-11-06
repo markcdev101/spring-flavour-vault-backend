@@ -25,7 +25,7 @@ import com.flavourvault.flavour_vault_backend.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RestController
 public class AuthenticationController {
 	@Autowired
