@@ -53,6 +53,7 @@ public class JwtService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));  // Collect roles as a list
+        claims.put("username", userDetails.getUsername()); // Include the username in the claims
 
         return generateToken(claims, userDetails);
     }
@@ -83,6 +84,12 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+    
+    //Token validatiobn so /auth/me can check authentication.
+    public boolean isTokenValid(String token) {
+    	final String username = extractUsername(token);
+    	return username != null && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

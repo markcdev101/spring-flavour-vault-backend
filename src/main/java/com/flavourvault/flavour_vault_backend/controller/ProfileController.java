@@ -1,51 +1,92 @@
 package com.flavourvault.flavour_vault_backend.controller;
 
+import com.flavourvault.flavour_vault_backend.dto.ProfileDto;
+import com.flavourvault.flavour_vault_backend.dto.UserInfoDto;
 import com.flavourvault.flavour_vault_backend.entities.Profile;
 import com.flavourvault.flavour_vault_backend.entities.User;
+import com.flavourvault.flavour_vault_backend.service.AuthenticationService;
+import com.flavourvault.flavour_vault_backend.service.JwtService;
 import com.flavourvault.flavour_vault_backend.service.ProfileService;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
+@Slf4j
 @RestController
-@RequestMapping("/api/profiles")
+@RequestMapping("/profile")
 public class ProfileController {
 
+	@Autowired
+	private final AuthenticationService authenticationService;
+	@Autowired
+	private final JwtService jwtService;
+	@Autowired
     private final ProfileService profileService;
 
-    @Autowired
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, AuthenticationService authenticationService, JwtService jwtService) {
         this.profileService = profileService;
+        this.authenticationService = authenticationService;
+        this.jwtService = jwtService;
     }
 
-    // GET endpoint to retrieve a Profile by Profile ID
-    @GetMapping("/{profileId}")
-    public ResponseEntity<Profile> getProfileById(@PathVariable Integer profileId) {
-        Optional<Profile> profile = profileService.findById(profileId);
-        return profile.map(ResponseEntity::ok)
-                      .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-    }
+    // Updated endpoint to retrieve the profile of the currently authenticated user
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(@CookieValue(name = "jwtToken", required = false) String token) {
+        if (token == null || !jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
 
-    // POST endpoint to create a new Profile (typically linked to a user creation)
-    @PostMapping
-    public ResponseEntity<Profile> createProfile(@RequestBody User user) {
-        Profile profile = profileService.createProfile(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(profile);
+        // Decode token to get user info
+        String username = jwtService.extractUsername(token);
+        User user = authenticationService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setUsername(user.getUsername());
+        userInfoDto.setId(user.getId());
+        userInfoDto.setRole(user.getRole().getName().toString());
+
+        Profile profile = user.getProfile();
+        if (profile != null) {
+            ProfileDto profileDto = new ProfileDto();
+            profileDto.setEmail(profile.getEmail());
+            profileDto.setFullName(profile.getFullName());
+            userInfoDto.setProfile(profileDto);
+        }
+
+        return ResponseEntity.ok(userInfoDto);
     }
 
     // PUT endpoint to update an existing Profile
-    @PutMapping("/{profileId}")
-    public ResponseEntity<Profile> updateProfile(
-            @PathVariable Integer profileId,
-            @RequestBody Profile updatedProfile) {
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMyProfile(@CookieValue(name = "jwtToken", required = false) String token,
+                                             @RequestBody ProfileDto updatedProfileDto) {
+        if (token == null || !jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        String username = jwtService.extractUsername(token);
+        User user = authenticationService.getUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         try {
-            Profile profile = profileService.updateProfile(profileId, updatedProfile);
-            return ResponseEntity.ok(profile);
+            Profile updatedProfile = profileService.updateUserProfile(user, updatedProfileDto);
+            ProfileDto profileDto = new ProfileDto();
+            profileDto.setEmail(updatedProfile.getEmail());
+            profileDto.setFullName(updatedProfile.getFullName());
+
+            return ResponseEntity.ok(profileDto);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
