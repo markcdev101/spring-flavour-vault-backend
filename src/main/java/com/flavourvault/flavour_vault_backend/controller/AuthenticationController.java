@@ -58,7 +58,7 @@ public class AuthenticationController {
                 .httpOnly(true)
                 .path("/")
                 .maxAge(jwtService.getExpirationTime() / 1000) // Set max age in seconds
-                .sameSite("Strict")
+                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
                 .secure(true) // Ensure the cookie is secure (only over HTTPS)
                 .build();
 
@@ -67,7 +67,7 @@ public class AuthenticationController {
                 .httpOnly(true)
                 .path("/")
                 .maxAge(jwtService.getExpirationTime() / 1000)
-                .sameSite("Strict")
+                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
                 .secure(true)
                 .build();
 
@@ -85,7 +85,7 @@ public class AuthenticationController {
 	                .httpOnly(true)
 	                .path("/")
 	                .maxAge(0) // Immediately expire the cookie
-	                .sameSite("Strict")
+	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
 	                .secure(true)
 	                .build();
 
@@ -93,7 +93,7 @@ public class AuthenticationController {
 	                .httpOnly(true)
 	                .path("/")
 	                .maxAge(0)
-	                .sameSite("Strict")
+	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
 	                .secure(true)
 	                .build();
 
