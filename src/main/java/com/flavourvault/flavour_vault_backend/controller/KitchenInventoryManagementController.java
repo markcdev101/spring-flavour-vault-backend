@@ -37,7 +37,7 @@ public class KitchenInventoryManagementController {
 
     // Fetch kitchen inventory item by barcode
     @GetMapping("/inventory/barcode/{barcode}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Kitchen_Inventory> getInventoryByBarcode(
             @CookieValue(name = "jwtToken", required = false) String token,
             @PathVariable String barcode) {
@@ -55,7 +55,7 @@ public class KitchenInventoryManagementController {
 
     // Fetch kitchen inventory items by name
     @GetMapping("/inventory/name/{name}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<Kitchen_Inventory>> getInventoryByName(
             @CookieValue(name = "jwtToken", required = false) String token,
             @PathVariable String name) {
