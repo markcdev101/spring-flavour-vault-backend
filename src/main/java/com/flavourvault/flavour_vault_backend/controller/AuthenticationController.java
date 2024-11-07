@@ -39,6 +39,11 @@ public class AuthenticationController {
 		this.authenticationService = authenticationService;
 	}
 
+	/**
+	 * Sign up endpoint
+	 * @param registerUserDto
+	 * @return
+	 */
 	@PostMapping("/signup")
 	public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
 		User registeredUser = authenticationService.signup(registerUserDto);
@@ -46,6 +51,11 @@ public class AuthenticationController {
 		return ResponseEntity.ok(registeredUser);
 	}
 
+	/**
+	 * Login endpoint that creates a Http-only cookies
+	 * @param loginUserDto
+	 * @return
+	 */
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
 		User authenticatedUser = authenticationService.authenticate(loginUserDto);
@@ -54,55 +64,64 @@ public class AuthenticationController {
 		String jwtToken = jwtService.generateToken(authenticatedUser);
 
 		// Set the token in an HTTP-only cookie
-        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
-                .httpOnly(true)
-                .path("/")
-                .maxAge(jwtService.getExpirationTime() / 1000) // Set max age in seconds
-                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
-                .secure(false) // Ensure the cookie is secure (only over HTTPS)
-                .build();
+		ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
+				.httpOnly(true)
+				.path("/")
+				.maxAge(jwtService.getExpirationTime() / 1000) // Set max age in seconds
+				.sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
+				.secure(false) // Ensure the cookie is secure (only over HTTPS)
+				.build();
 
-        // Set the username in another HTTP-only cookie
-        ResponseCookie usernameCookie = ResponseCookie.from("username", authenticatedUser.getUsername())
-                .httpOnly(true)
-                .path("/")
-                .maxAge(jwtService.getExpirationTime() / 1000)
-                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
-                .secure(false)
-                .build();
+		// Set the username in another HTTP-only cookie
+		ResponseCookie usernameCookie = ResponseCookie.from("username", authenticatedUser.getUsername())
+				.httpOnly(true)
+				.path("/")
+				.maxAge(jwtService.getExpirationTime() / 1000)
+				.sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
+				.secure(false)
+				.build();
 
-        // Set cookies in the response header
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
-                .body("Login successful");
+		// Set cookies in the response header
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
+				.body("Login successful");
 	}
 	
-	  @PostMapping("/logout")
-	    public ResponseEntity<?> logout() {
-	        // Create expired cookies to clear the JWT token and username cookies
-	        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", "")
-	                .httpOnly(true)
-	                .path("/")
-	                .maxAge(0) // Immediately expire the cookie
-	                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
-	                .secure(false)
-	                .build();
+	/**
+	 * Logout endpoints that revokes the http-only cookies
+	 * @return
+	 */
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout() {
+		// Create expired cookies to clear the JWT token and username cookies
+		ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", "")
+				.httpOnly(true)
+				.path("/")
+				.maxAge(0) // Immediately expire the cookie
+				.sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
+				.secure(false)
+				.build();
 
-	        ResponseCookie usernameCookie = ResponseCookie.from("username", "")
-	                .httpOnly(true)
-	                .path("/")
-	                .maxAge(0)
-	                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
-	                .secure(false)
-	                .build();
+		ResponseCookie usernameCookie = ResponseCookie.from("username", "")
+				.httpOnly(true)
+				.path("/")
+				.maxAge(0)
+				.sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
+				.secure(false)
+				.build();
 
-	        return ResponseEntity.ok()
-	                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-	                .header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
-	                .body("Logged out successfully");
-	    }
-	
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, usernameCookie.toString())
+				.body("Logged out successfully");
+	}
+
+	/**
+	 * Endpoint for authenticating users
+	 * @param token
+	 * @return
+	 */
 	@GetMapping("/me")
 	public ResponseEntity<?> getAuthenticatedUser(@CookieValue(name = "jwtToken", required = false) String token) {
 		if (token == null || !jwtService.isTokenValid(token)) {
@@ -115,23 +134,23 @@ public class AuthenticationController {
 		if (user == null) {
 			return ResponseEntity.status(401).body("Unauthorized");
 		}
-		
+
 		UserInfoDto userInfoDto = new UserInfoDto();
 		userInfoDto.setUsername(user.getUsername());
 		userInfoDto.setId(user.getId());
 		userInfoDto.setRole(user.getRole().getName().toString());
 
-		
-		Profile profile = user.getProfile();
-	    if (profile != null) {
-	        ProfileDto profileDto = new ProfileDto();
-//	        profileDto.setId(profile.getId());
-	        profileDto.setEmail(profile.getEmail());
-	        profileDto.setFullName(profile.getFullName());
-	        // Map other necessary fields
 
-	        userInfoDto.setProfile(profileDto);
-	    }
+		Profile profile = user.getProfile();
+		if (profile != null) {
+			ProfileDto profileDto = new ProfileDto();
+			//	        profileDto.setId(profile.getId());
+			profileDto.setEmail(profile.getEmail());
+			profileDto.setFullName(profile.getFullName());
+			// Map other necessary fields
+
+			userInfoDto.setProfile(profileDto);
+		}
 
 		// Send user profile or limited information as needed
 		return ResponseEntity.ok(userInfoDto);

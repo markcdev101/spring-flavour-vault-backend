@@ -28,6 +28,12 @@ public class AdminController {
         this.jwtService = jwtService;
     }
     
+    /**
+     * Endpoint for creating admins, prerequisite is that only Super Admins can create admins
+     * @param token
+     * @param registerUserDto
+     * @return
+     */
     @PostMapping
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<User> createAdministrator(@CookieValue(name = "jwtToken", required = false) String token, 
