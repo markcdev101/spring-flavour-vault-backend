@@ -16,6 +16,11 @@ public class KitchenInventoryManagementService {
 	private KitchenInventoryRepository kitchenInventoryRepository;
 	
 	
+	// Add new kitchen inventory item
+	public Kitchen_Inventory addInventory(Kitchen_Inventory newInventory) {
+	    return kitchenInventoryRepository.save(newInventory);
+	}
+	
 	// Fetching kitchen inventory item by barcode
 	public Optional<Kitchen_Inventory> getInventoryByBarcode(String barcode) {
 	    return kitchenInventoryRepository.findByBarcode(barcode);
