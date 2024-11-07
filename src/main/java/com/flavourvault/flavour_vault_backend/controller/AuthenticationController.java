@@ -85,7 +85,7 @@ public class AuthenticationController {
 	                .httpOnly(true)
 	                .path("/")
 	                .maxAge(0) // Immediately expire the cookie
-	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
+	                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
 	                .secure(false)
 	                .build();
 
@@ -93,7 +93,7 @@ public class AuthenticationController {
 	                .httpOnly(true)
 	                .path("/")
 	                .maxAge(0)
-	                .sameSite("None") //If cookie is set to String it will not be sent for cross-origin requests
+	                .sameSite("Strict") //If cookie is set to String it will not be sent for cross-origin requests
 	                .secure(false)
 	                .build();
 
