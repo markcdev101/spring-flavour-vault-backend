@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,13 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flavourvault.flavour_vault_backend.entities.Recipe;
+import com.flavourvault.flavour_vault_backend.service.JwtService;
 import com.flavourvault.flavour_vault_backend.service.RecipeManagementService;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/flavourvault/api")
+@AllArgsConstructor
 public class RecipeManagementController {
 
 	/**
@@ -29,6 +33,9 @@ public class RecipeManagementController {
 	 */
 	@Autowired
 	private RecipeManagementService recipeManagementService;
+	
+	@Autowired
+	private final JwtService jwtService;
 
 	/**
 	 * Gets all the recipe
@@ -37,7 +44,11 @@ public class RecipeManagementController {
 	 */
 	@GetMapping("/recipes")
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
-	public ResponseEntity<List<Recipe>> getAllRecipes() {
+	public ResponseEntity<List<Recipe>> getAllRecipes(@CookieValue(name = "jwtToken", required = false) String token) {
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body(null);
+		}
+		
 		log.info("START GET /recipes endpoint");
 		List<Recipe> recipes = recipeManagementService.getAllRecipes();
 		log.info("END GET /recipes endpoint");
@@ -53,7 +64,12 @@ public class RecipeManagementController {
 	 */
 	@GetMapping("/recipes/{id}")
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
-	public ResponseEntity<Recipe> getRecipe(@PathVariable Long id) {
+	public ResponseEntity<Recipe> getRecipe(@CookieValue(name = "jwtToken", required = false) String token,
+			@PathVariable Long id) {
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body(null);
+		}
+		
 		log.info("START GET /recipes/{id} endpoint");
 		Recipe recipe = recipeManagementService.getRecipe(id);
 		if (recipe != null) {
@@ -74,7 +90,12 @@ public class RecipeManagementController {
 	 */
 	@PostMapping("/recipes")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) {
+	public ResponseEntity<Recipe> createRecipe(@CookieValue(name = "jwtToken", required = false) String token,
+			@RequestBody Recipe recipe) {
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body(null);
+		}
+		
 		log.info("START POST /recipes endpoint");
 		Recipe createdRecipe = recipeManagementService.createRecipe(recipe);
 		log.info("END POST /recipes endpoint");
@@ -91,7 +112,13 @@ public class RecipeManagementController {
 	 */
 	@PutMapping("/recipes/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @RequestBody Recipe recipe) {
+	public ResponseEntity<Recipe> updateRecipe(@CookieValue(name = "jwtToken", required = false) String token, 
+			@PathVariable Long id, @RequestBody Recipe recipe) {
+		
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body(null);
+		}
+		
 		log.info("START PUT /recipes/{id} endpoint");
 		Recipe updatedRecipe = recipeManagementService.updateRecipe(id, recipe);
 		if (updatedRecipe != null) {
@@ -112,7 +139,12 @@ public class RecipeManagementController {
 	 */
 	@DeleteMapping("/recipes/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<Void> deleteRecipe(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteRecipe(@CookieValue(name = "jwtToken", required = false) String token,
+			@PathVariable Long id) {
+		if (token == null || !jwtService.isTokenValid(token)) {
+			return ResponseEntity.status(401).body(null);
+		}
+		
 		log.info("START DELETE /recipes/{id} endpoint");
 		recipeManagementService.deleteRecipe(id);
 		log.info("END DELETE /recipes/{id} endpoint");
