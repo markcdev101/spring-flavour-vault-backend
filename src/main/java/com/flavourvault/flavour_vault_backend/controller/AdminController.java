@@ -30,7 +30,8 @@ public class AdminController {
     
     @PostMapping
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<User> createAdministrator(@CookieValue(name = "jwtToken", required = false) String token, @RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<User> createAdministrator(@CookieValue(name = "jwtToken", required = false) String token, 
+    		@RequestBody RegisterUserDto registerUserDto) {
     	if (token == null || !jwtService.isTokenValid(token)) {
 			return ResponseEntity.status(401).body(null);
 		}
