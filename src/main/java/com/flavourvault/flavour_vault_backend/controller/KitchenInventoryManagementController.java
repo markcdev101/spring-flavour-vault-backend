@@ -35,6 +35,24 @@ public class KitchenInventoryManagementController {
     @Autowired
     private final JwtService jwtService;
 
+    
+ // Fetch all kitchen inventory items
+    @GetMapping("/inventory")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<List<Kitchen_Inventory>> getAllInventoryItems(
+            @CookieValue(name = "jwtToken", required = false) String token) {
+        if (token == null || !jwtService.isTokenValid(token)) {
+            return ResponseEntity.status(401).body(null);
+        }
+
+        log.info("START GET /inventory endpoint");
+        List<Kitchen_Inventory> inventoryList = kitchenInventoryManagementService.getAllInventoryItems();
+        log.info("END GET /inventory endpoint");
+
+        return ResponseEntity.ok(inventoryList);
+    }
+    
+    
     // Fetch kitchen inventory item by barcode
     @GetMapping("/inventory/barcode/{barcode}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

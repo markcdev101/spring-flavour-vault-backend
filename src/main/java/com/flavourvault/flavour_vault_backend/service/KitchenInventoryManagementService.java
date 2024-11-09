@@ -16,6 +16,11 @@ public class KitchenInventoryManagementService {
 	private KitchenInventoryRepository kitchenInventoryRepository;
 	
 	
+	// Fetching all kitchen inventory items
+	public List<Kitchen_Inventory> getAllInventoryItems() {
+	    return kitchenInventoryRepository.findAll();
+	}
+	
 	// Add new kitchen inventory item
 	public Kitchen_Inventory addInventory(Kitchen_Inventory newInventory) {
 	    return kitchenInventoryRepository.save(newInventory);
